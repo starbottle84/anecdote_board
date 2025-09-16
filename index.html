@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 경험담 블로그 - 썰 모음집</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-noto">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b-2 border-blue-100">
+        <div class="max-w-4xl mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">📖 내 경험담 블로그</h1>
+                    <p class="text-gray-600 mt-1">과거의 경험들을 썰로 풀어내는 공간</p>
+                </div>
+                <nav class="flex gap-4">
+                    <button onclick="showHome()" id="homeBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg">홈</button>
+                    <button onclick="showWrite()" id="writeBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">글쓰기</button>
+                    <button onclick="showSeries()" id="seriesBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">시리즈</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        
+        <!-- Home Section -->
+        <div id="homeSection">
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                <h2 class="text-xl font-bold mb-4">📊 블로그 현황</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600" id="totalCount">0</div>
+                        <div class="text-sm text-gray-600">총 썰</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600" id="publishedCount">0</div>
+                        <div class="text-sm text-gray-600">발행됨</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-yellow-600" id="draftCount">0</div>
+                        <div class="text-sm text-gray-600">초안</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-600" id="seriesCount">0</div>
+                        <div class="text-sm text-gray-600">시리즈</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6" id="storiesList">
+                <div class="text-center py-8">
+                    <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                    <p class="text-gray-600">썰을 불러오는 중...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Write Section -->
+        <div id="writeSection" class="hidden">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h2 class="text-xl font-bold mb-6">✍️ 새 썰 쓰기</h2>
+                
+                <form onsubmit="saveStory(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">제목 *</label>
+                        <input type="text" id="storyTitle" required placeholder="썰 제목을 입력하세요" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">시리즈</label>
+                            <input type="text" id="storySeries" placeholder="예: 학창시절, 직장생활" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">분위기</label>
+                            <select id="storyMood" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">선택하세요</option>
+                                <option value="재미있는">😄 재미있는</option>
+                                <option value="감동적인">🥲 감동적인</option>
+                                <option value="당황스러운">😅 당황스러운</option>
+                                <option value="분노">😠 분노</option>
+                                <option value="슬픈">😢 슬픈</option>
+                                <option value="신나는">🤩 신나는</option>
+                                <option value="무서운">😨 무서운</option>
+                                <option value="황당한">🤯 황당한</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 위: 글 내용 -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">내용 *</label>
+                        <textarea id="storyContent" required placeholder="여기서부터 썰을 풀어보세요...
+
+예시:
+그때가 고3 겨울이었나? 수능 끝나고 친구들이랑 놀러 간 날이었는데...
+
+(대화)
+친구: &quot;야, 저기 봐봐&quot;
+나: &quot;어? 뭐가?&quot;
+
+그런데 갑자기..." 
+                                 class="w-full px-4 py-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" rows="15"></textarea>
+                    </div>
+
+                    <!-- 아래: 웹툰 전환 메모 -->
+                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6 border-2 border-dashed border-purple-200">
+                        <h3 class="text-lg font-semibold mb-6 flex items-center text-purple-700">
+                            <i class="fas fa-palette mr-2"></i>
+                            🎨 웹툰 전환 메모 (선택사항)
+                        </h3>
+                        
+                        <!-- 상단: 썸네일 + 제작메모 -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <!-- 썸네일 아이디어 -->
+                            <div>
+                                <label class="block text-sm font-medium text-purple-700 mb-2">📎 썸네일 아이디어</label>
+                                <textarea id="thumbnailIdea" placeholder="어떤 장면을 썸네일로 할까요?" 
+                                         class="w-full px-3 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm bg-white" rows="3"></textarea>
+                            </div>
+                            
+                            <!-- 제작 메모 -->
+                            <div>
+                                <label class="block text-sm font-medium text-purple-700 mb-2">📝 제작 메모</label>
+                                <textarea id="webtoonNotes" placeholder="웹툰 제작할 때 참고할 사항들
+예: 코믹한 상황이라 과장된 표정 연출 필요" 
+                                         class="w-full px-3 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm bg-white" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- 하단: 등장인물 + 장면구성 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- 등장인물 -->
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <label class="text-sm font-medium text-purple-700">👥 등장인물</label>
+                                    <button type="button" onclick="addCharacter()" class="px-3 py-1 text-xs bg-purple-200 text-purple-700 rounded hover:bg-purple-300 transition-colors">
+                                        <i class="fas fa-plus mr-1"></i>추가
+                                    </button>
+                                </div>
+                                <div id="charactersContainer" class="space-y-3">
+                                    <!-- 기본 2명 -->
+                                    <div class="character-item p-3 bg-white rounded-lg border border-purple-100">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-medium text-purple-600">인물 1</span>
+                                            <button type="button" onclick="removeCharacter(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="character-name w-full mb-2 px-2 py-1 border border-purple-200 rounded text-sm" placeholder="이름 (예: 나, 김민수)">
+                                        <textarea class="character-desc w-full px-2 py-1 border border-purple-200 rounded text-sm" rows="2" placeholder="외모, 성격, 특징 등
+예: 고3, 키 170cm, 성격 내향적"></textarea>
+                                    </div>
+                                    <div class="character-item p-3 bg-white rounded-lg border border-purple-100">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-medium text-purple-600">인물 2</span>
+                                            <button type="button" onclick="removeCharacter(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <input type="text" class="character-name w-full mb-2 px-2 py-1 border border-purple-200 rounded text-sm" placeholder="이름 (예: 친구, 선생님)">
+                                        <textarea class="character-desc w-full px-2 py-1 border border-purple-200 rounded text-sm" rows="2" placeholder="외모, 성격, 특징 등
+예: 고3, 성격 활발함"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 장면 구성 -->
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <label class="text-sm font-medium text-purple-700">🎬 장면 구성</label>
+                                    <button type="button" onclick="addScene()" class="px-3 py-1 text-xs bg-purple-200 text-purple-700 rounded hover:bg-purple-300 transition-colors">
+                                        <i class="fas fa-plus mr-1"></i>컷 추가
+                                    </button>
+                                </div>
+                                <div id="scenesContainer" class="space-y-3">
+                                    <!-- 기본 4컷 -->
+                                    <div class="scene-item p-3 bg-white rounded-lg border border-purple-100">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-medium text-purple-600">1컷</span>
+                                            <button type="button" onclick="removeScene(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <textarea class="scene-desc w-full px-2 py-1 border border-gray-200 rounded text-sm" rows="2" placeholder="1컷 장면 설명
+예: 평범한 축구 경기 (전체샷)"></textarea>
+                                    </div>
+                                    <div class="scene-item p-3 bg-white rounded-lg border border-purple-100">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-medium text-purple-600">2컷</span>
+                                            <button type="button" onclick="removeScene(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <textarea class="scene-desc w-full px-2 py-1 border border-gray-200 rounded text-sm" rows="2" placeholder="2컷 장면 설명
+예: 김민수의 자신만만한 표정 (클로즈업)"></textarea>
+                                    </div>
+                                    <div class="scene-item p-3 bg-white rounded-lg border border-purple-100">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-medium text-purple-600">3컷</span>
+                                            <button type="button" onclick="removeScene(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <textarea class="scene-desc w-full px-2 py-1 border border-gray-200 rounded text-sm" rows="2" placeholder="3컷 장면 설명
+예: 갑자기 공을 손으로 드는 순간 (충격)"></textarea>
+                                    </div>
+                                    <div class="scene-item p-3 bg-white rounded-lg border border-purple-100">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-medium text-purple-600">4컷</span>
+                                            <button type="button" onclick="removeScene(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <textarea class="scene-desc w-full px-2 py-1 border border-gray-200 rounded text-sm" rows="2" placeholder="4컷 장면 설명
+예: 모든 사람들의 당황한 표정 (반응샷)"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 팁 -->
+                        <div class="mt-6 p-4 bg-purple-100 rounded-lg">
+                            <p class="text-sm text-purple-700">
+                                <i class="fas fa-lightbulb mr-2"></i>
+                                <strong>💡 웹툰 제작 팁:</strong> 썰을 쓰면서 떠오르는 장면들을 간단히 메모해두세요. 나중에 웹툰으로 만들 때 큰 도움이 됩니다!
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="button" onclick="saveAsDraft()" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
+                            <i class="fas fa-save mr-2"></i>초안 저장
+                        </button>
+                        <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-paper-plane mr-2"></i>발행하기
+                        </button>
+                        <button type="button" onclick="clearForm()" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                            <i class="fas fa-trash mr-2"></i>초기화
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Series Section -->
+        <div id="seriesSection" class="hidden">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h2 class="text-xl font-bold mb-6">📚 시리즈별 정리</h2>
+                <div id="seriesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Series will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Story Detail Modal -->
+    <div id="storyModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center p-4 min-h-screen">
+            <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4">
+                    <div class="flex items-center justify-between">
+                        <h2 id="modalTitle" class="text-xl font-bold text-gray-900"></h2>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div id="modalMeta" class="flex items-center gap-2 mb-4">
+                        <!-- Meta info will be loaded here -->
+                    </div>
+                    
+                    <div id="modalContent" class="prose max-w-none mb-6">
+                        <!-- Story content will be loaded here -->
+                    </div>
+                    
+                    <!-- 웹툰 메모 섹션 -->
+                    <div id="webtoonSection" class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6 hidden">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center text-purple-700">
+                            <i class="fas fa-palette mr-2"></i>
+                            웹툰 전환 메모
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div id="thumbnailSection"></div>
+                            <div id="charactersSection"></div>
+                            <div id="scenesSection" class="md:col-span-2"></div>
+                            <div id="notesSection" class="md:col-span-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stories = [];
+        let currentSection = 'home';
+
+        // 네비게이션 함수들
+        function showHome() {
+            hideAllSections();
+            document.getElementById('homeSection').classList.remove('hidden');
+            updateButtonStyles('homeBtn');
+            loadData();
+        }
+
+        function showWrite() {
+            hideAllSections();
+            document.getElementById('writeSection').classList.remove('hidden');
+            updateButtonStyles('writeBtn');
+        }
+
+        function showSeries() {
+            hideAllSections();
+            document.getElementById('seriesSection').classList.remove('hidden');
+            updateButtonStyles('seriesBtn');
+            loadSeries();
+        }
+
+        function hideAllSections() {
+            document.getElementById('homeSection').classList.add('hidden');
+            document.getElementById('writeSection').classList.add('hidden');
+            document.getElementById('seriesSection').classList.add('hidden');
+        }
+
+        function updateButtonStyles(activeBtn) {
+            const buttons = ['homeBtn', 'writeBtn', 'seriesBtn'];
+            buttons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                if (btnId === activeBtn) {
+                    btn.className = 'px-4 py-2 bg-blue-600 text-white rounded-lg';
+                } else {
+                    btn.className = 'px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300';
+                }
+            });
+        }
+
+        // 데이터 로딩 (API가 안 되면 localStorage 사용)
+        async function loadData() {
+            try {
+                // API 시도
+                const response = await fetch('tables/stories');
+                if (response.ok) {
+                    const data = await response.json();
+                    stories = data.data || [];
+                } else {
+                    throw new Error('API 실패');
+                }
+            } catch (error) {
+                // localStorage 백업 사용
+                console.warn('API를 사용할 수 없어 localStorage를 사용합니다:', error);
+                stories = JSON.parse(localStorage.getItem('stories') || '[]');
+            }
+            
+            updateStats();
+            renderStories();
+        }
+
+        function updateStats() {
+            const total = stories.length;
+            const published = stories.filter(s => s.status === '발행').length;
+            const draft = stories.filter(s => s.status === '초안').length;
+            const seriesSet = new Set(stories.map(s => s.series).filter(Boolean));
+            
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('publishedCount').textContent = published;
+            document.getElementById('draftCount').textContent = draft;
+            document.getElementById('seriesCount').textContent = seriesSet.size;
+        }
+
+        function renderStories() {
+            const container = document.getElementById('storiesList');
+            
+            if (stories.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-book-open text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-medium text-gray-600 mb-2">아직 작성한 썰이 없어요</h3>
+                        <p class="text-gray-500 mb-4">첫 번째 경험담을 써보세요!</p>
+                        <button onclick="showWrite()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>첫 썰 쓰기
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const sortedStories = stories.sort((a, b) => new Date(b.created_at || Date.now()) - new Date(a.created_at || Date.now()));
+            
+            container.innerHTML = sortedStories.map(story => {
+                const moodEmojis = {
+                    '재미있는': '😄', '감동적인': '🥲', '당황스러운': '😅', '분노': '😠',
+                    '슬픈': '😢', '신나는': '🤩', '무서운': '😨', '황당한': '🤯'
+                };
+                const emoji = moodEmojis[story.mood] || '📖';
+                const statusColor = story.status === '발행' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
+                const previewContent = (story.content || '').substring(0, 150) + '...';
+                const createdAt = story.created_at ? new Date(story.created_at).toLocaleDateString('ko-KR') : '방금 전';
+
+                return `
+                    <article class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    ${story.series ? `<span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">${story.series}</span>` : ''}
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">${story.status || '초안'}</span>
+                                    ${(story.characters || story.scenes || story.thumbnail_idea || story.webtoon_notes) ? 
+                                        '<span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-700" title="웹툰 메모 있음"><i class="fas fa-palette mr-1"></i>웹툰</span>' : ''}
+                                </div>
+                                <h2 class="text-xl font-semibold text-gray-900 mb-2 cursor-pointer hover:text-blue-600 transition-colors" onclick="viewStoryDetail('${story.id}')">
+                                    ${emoji} ${story.title}
+                                </h2>
+                                <p class="text-gray-600 leading-relaxed">${previewContent}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-sm text-gray-500 border-t pt-4">
+                            <span><i class="far fa-clock mr-1"></i>${createdAt}</span>
+                            <div class="flex gap-2">
+                                <button onclick="deleteStory('${story.id}')" class="text-red-600 hover:text-red-700 px-2 py-1 rounded">
+                                    <i class="fas fa-trash mr-1"></i>삭제
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        // 스토리 저장
+        async function saveStory(event) {
+            event.preventDefault();
+            await saveStoryWithStatus('발행');
+        }
+
+        async function saveAsDraft() {
+            await saveStoryWithStatus('초안');
+        }
+
+        async function saveStoryWithStatus(status) {
+            const title = document.getElementById('storyTitle').value.trim();
+            const series = document.getElementById('storySeries').value.trim();
+            const mood = document.getElementById('storyMood').value;
+            const content = document.getElementById('storyContent').value.trim();
+
+            if (!title || !content) {
+                alert('제목과 내용을 입력해주세요.');
+                return;
+            }
+
+            // 웹툰 메모 필드들 가져오기
+            const thumbnailIdea = document.getElementById('thumbnailIdea').value.trim();
+            const webtoonNotes = document.getElementById('webtoonNotes').value.trim();
+            
+            // 등장인물 데이터 수집
+            const characterItems = document.querySelectorAll('.character-item');
+            const charactersData = Array.from(characterItems).map((item, index) => {
+                const name = item.querySelector('.character-name').value.trim();
+                const desc = item.querySelector('.character-desc').value.trim();
+                return name || desc ? { name: name || `인물 ${index + 1}`, description: desc } : null;
+            }).filter(Boolean);
+            
+            // 장면 데이터 수집
+            const sceneItems = document.querySelectorAll('.scene-item');
+            const scenesData = Array.from(sceneItems).map((item, index) => {
+                const desc = item.querySelector('.scene-desc').value.trim();
+                return desc ? { cut: index + 1, description: desc } : null;
+            }).filter(Boolean);
+            
+            // JSON으로 저장 (기존 호환성 위해 문자열로도 저장)
+            const characters = charactersData.map(c => `${c.name}: ${c.description}`).join('\n');
+            const scenes = scenesData.map(s => `${s.cut}컷: ${s.description}`).join('\n');
+
+            const story = {
+                id: Date.now().toString(),
+                title,
+                series,
+                mood,
+                content,
+                status,
+                created_at: new Date().toISOString(),
+                tags: [],
+                characters,
+                scenes,
+                thumbnail_idea: thumbnailIdea,
+                webtoon_notes: webtoonNotes
+            };
+
+            try {
+                // API 시도
+                const response = await fetch('tables/stories', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(story)
+                });
+
+                if (response.ok) {
+                    console.log('API를 통해 저장되었습니다.');
+                } else {
+                    throw new Error('API 저장 실패');
+                }
+            } catch (error) {
+                // localStorage 백업
+                console.warn('API 저장 실패, localStorage 사용:', error);
+                const stories = JSON.parse(localStorage.getItem('stories') || '[]');
+                stories.unshift(story);
+                localStorage.setItem('stories', JSON.stringify(stories));
+            }
+
+            alert(`${status === '발행' ? '발행' : '저장'}되었습니다!`);
+            clearForm();
+            showHome();
+        }
+
+        function clearForm() {
+            document.getElementById('storyTitle').value = '';
+            document.getElementById('storySeries').value = '';
+            document.getElementById('storyMood').value = '';
+            document.getElementById('storyContent').value = '';
+            
+            // 웹툰 메모 필드들 초기화
+            document.getElementById('thumbnailIdea').value = '';
+            document.getElementById('webtoonNotes').value = '';
+            
+            // 등장인물 초기화 (기본 2명으로 리셋)
+            const charactersContainer = document.getElementById('charactersContainer');
+            charactersContainer.innerHTML = `
+                <div class="character-item p-3 bg-white rounded-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-purple-600">인물 1</span>
+                        <button type="button" onclick="removeCharacter(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <input type="text" class="character-name w-full mb-2 px-2 py-1 border border-purple-200 rounded text-sm" placeholder="이름 (예: 나, 김민수)">
+                    <textarea class="character-desc w-full px-2 py-1 border border-purple-200 rounded text-sm" rows="2" placeholder="외모, 성격, 특징 등
+예: 고3, 키 170cm, 성격 내향적"></textarea>
+                </div>
+                <div class="character-item p-3 bg-white rounded-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-purple-600">인물 2</span>
+                        <button type="button" onclick="removeCharacter(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <input type="text" class="character-name w-full mb-2 px-2 py-1 border border-purple-200 rounded text-sm" placeholder="이름 (예: 친구, 선생님)">
+                    <textarea class="character-desc w-full px-2 py-1 border border-purple-200 rounded text-sm" rows="2" placeholder="외모, 성격, 특징 등
+예: 고3, 성격 활발함"></textarea>
+                </div>
+            `;
+            
+            // 장면 초기화 (기본 4컷으로 리셋)  
+            const scenesContainer = document.getElementById('scenesContainer');
+            scenesContainer.innerHTML = `
+                <div class="scene-item mb-3 p-3 bg-white rounded-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-purple-600">1컷</span>
+                        <button type="button" onclick="removeScene(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <textarea class="scene-desc w-full px-2 py-1 border border-gray-200 rounded text-sm" rows="2" placeholder="1컷 장면 설명
+예: 평범한 축구 경기 (전체샷)"></textarea>
+                </div>
+                <div class="scene-item mb-3 p-3 bg-white rounded-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-purple-600">2컷</span>
+                        <button type="button" onclick="removeScene(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <textarea class="scene-desc w-full px-2 py-1 border border-gray-200 rounded text-sm" rows="2" placeholder="2컷 장면 설명
+예: 김민수의 자신만만한 표정 (클로즈업)"></textarea>
+                </div>
+                <div class="scene-item mb-3 p-3 bg-white rounded-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-purple-600">3컷</span>
+                        <button type="button" onclick="removeScene(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <textarea class="scene-desc w-full px-2 py-1 border border-gray-200 rounded text-sm" rows="2" placeholder="3컷 장면 설명
+예: 갑자기 공을 손으로 드는 순간 (충격)"></textarea>
+                </div>
+                <div class="scene-item mb-3 p-3 bg-white rounded-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-medium text-purple-600">4컷</span>
+                        <button type="button" onclick="removeScene(this)" class="text-xs text-red-600 hover:text-red-700 hidden">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <textarea class="scene-desc w-full px-2 py-1 border border-gray-200 rounded text-sm" rows="2" placeholder="4컷 장면 설명
+예: 모든 사람들의 당황한 표정 (반응샷)"></textarea>
+                </div>
+            `;
+        }
+
+        async function deleteStory(id) {
+            if (!confirm('정말로 이 썰을 삭제하시겠습니까?')) return;
+            
+            try {
+                const response = await fetch(`tables/stories/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    console.log('API를 통해 삭제되었습니다.');
+                } else {
+                    throw new Error('API 삭제 실패');
+                }
+            } catch (error) {
+                console.warn('API 삭제 실패, localStorage 사용:', error);
+                const stories = JSON.parse(localStorage.getItem('stories') || '[]');
+                const filteredStories = stories.filter(story => story.id !== id);
+                localStorage.setItem('stories', JSON.stringify(filteredStories));
+            }
+            
+            loadData();
+        }
+
+        function loadSeries() {
+            const seriesMap = new Map();
+            
+            stories.forEach(story => {
+                if (!story.series) return;
+                
+                if (!seriesMap.has(story.series)) {
+                    seriesMap.set(story.series, { name: story.series, count: 0, published: 0 });
+                }
+                
+                const info = seriesMap.get(story.series);
+                info.count++;
+                if (story.status === '발행') info.published++;
+            });
+
+            const container = document.getElementById('seriesContainer');
+            const seriesArray = Array.from(seriesMap.values());
+
+            if (seriesArray.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8">
+                        <i class="fas fa-folder-open text-4xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-600">아직 시리즈가 없습니다.</p>
+                        <button onclick="showWrite()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            첫 썰 쓰기
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = seriesArray.map(series => {
+                const progress = Math.round((series.published / series.count) * 100);
+                return `
+                    <div class="bg-white border rounded-lg p-4">
+                        <h3 class="font-semibold text-lg mb-2">📚 ${series.name}</h3>
+                        <p class="text-gray-600 mb-3">총 ${series.count}편 • 발행 ${series.published}편</p>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: ${progress}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500">발행률 ${progress}%</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 웹툰 메모 UI 관련 함수들
+        function addCharacter() {
+            const container = document.getElementById('charactersContainer');
+            const characterCount = container.children.length + 1;
+            
+            const newCharacter = document.createElement('div');
+            newCharacter.className = 'character-item p-3 bg-white rounded-lg border border-purple-100';
+            newCharacter.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-purple-600">인물 ${characterCount}</span>
+                    <button type="button" onclick="removeCharacter(this)" class="text-xs text-red-600 hover:text-red-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <input type="text" class="character-name w-full mb-2 px-2 py-1 border border-purple-200 rounded text-sm" placeholder="이름 (예: 친구, 선생님)">
+                <textarea class="character-desc w-full px-2 py-1 border border-purple-200 rounded text-sm" rows="2" placeholder="외모, 성격, 특징 등"></textarea>
+            `;
+            
+            container.appendChild(newCharacter);
+            updateRemoveButtons();
+        }
+
+        function removeCharacter(button) {
+            const characterItem = button.closest('.character-item');
+            characterItem.remove();
+            updateCharacterNumbers();
+            updateRemoveButtons();
+        }
+
+        function updateCharacterNumbers() {
+            const characters = document.querySelectorAll('.character-item');
+            characters.forEach((character, index) => {
+                const label = character.querySelector('.text-purple-600');
+                label.textContent = `인물 ${index + 1}`;
+            });
+        }
+
+        function updateRemoveButtons() {
+            const characters = document.querySelectorAll('.character-item');
+            const removeButtons = document.querySelectorAll('.character-item button[onclick*="removeCharacter"]');
+            
+            // 2개 이하일 때는 삭제 버튼 숨기기
+            removeButtons.forEach(button => {
+                if (characters.length <= 2) {
+                    button.classList.add('hidden');
+                } else {
+                    button.classList.remove('hidden');
+                }
+            });
+        }
+
+        function addScene() {
+            const container = document.getElementById('scenesContainer');
+            const sceneCount = container.children.length + 1;
+            
+            const newScene = document.createElement('div');
+            newScene.className = 'scene-item mb-3 p-3 bg-white rounded-lg border border-purple-100';
+            newScene.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-purple-600">${sceneCount}컷</span>
+                    <button type="button" onclick="removeScene(this)" class="text-xs text-red-600 hover:text-red-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <textarea class="scene-desc w-full px-2 py-1 border border-gray-200 rounded text-sm" rows="2" placeholder="${sceneCount}컷 장면 설명"></textarea>
+            `;
+            
+            container.appendChild(newScene);
+            updateSceneRemoveButtons();
+        }
+
+        function removeScene(button) {
+            const sceneItem = button.closest('.scene-item');
+            sceneItem.remove();
+            updateSceneNumbers();
+            updateSceneRemoveButtons();
+        }
+
+        function updateSceneNumbers() {
+            const scenes = document.querySelectorAll('.scene-item');
+            scenes.forEach((scene, index) => {
+                const label = scene.querySelector('.text-purple-600');
+                label.textContent = `${index + 1}컷`;
+                const textarea = scene.querySelector('textarea');
+                textarea.placeholder = `${index + 1}컷 장면 설명`;
+            });
+        }
+
+        function updateSceneRemoveButtons() {
+            const scenes = document.querySelectorAll('.scene-item');
+            const removeButtons = document.querySelectorAll('.scene-item button[onclick*="removeScene"]');
+            
+            // 1개 이하일 때는 삭제 버튼 숨기기
+            removeButtons.forEach(button => {
+                if (scenes.length <= 1) {
+                    button.classList.add('hidden');
+                } else {
+                    button.classList.remove('hidden');
+                }
+            });
+        }
+
+        // 상세보기 모달 관련 함수들
+        function viewStoryDetail(id) {
+            const story = stories.find(s => s.id === id);
+            if (!story) return;
+
+            // 모달 제목 설정
+            const moodEmojis = {
+                '재미있는': '😄', '감동적인': '🥲', '당황스러운': '😅', '분노': '😠',
+                '슬픈': '😢', '신나는': '🤩', '무서운': '😨', '황당한': '🤯'
+            };
+            const emoji = moodEmojis[story.mood] || '📖';
+            document.getElementById('modalTitle').innerHTML = `${emoji} ${story.title}`;
+
+            // 메타 정보 설정
+            const statusConfig = {
+                '발행': { class: 'bg-green-100 text-green-700', text: '발행됨' },
+                '완성': { class: 'bg-blue-100 text-blue-700', text: '완성' },
+                '초안': { class: 'bg-yellow-100 text-yellow-700', text: '초안' }
+            };
+            const status = statusConfig[story.status] || statusConfig['초안'];
+            const createdAt = story.created_at ? new Date(story.created_at).toLocaleDateString('ko-KR') : '방금 전';
+            
+            const metaHtml = [
+                story.series ? `<span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">${story.series}</span>` : '',
+                `<span class="px-2 py-1 text-xs font-medium rounded-full ${status.class}">${status.text}</span>`,
+                `<span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i>${createdAt}</span>`
+            ].filter(Boolean);
+            
+            document.getElementById('modalMeta').innerHTML = metaHtml.join('');
+
+            // 내용 설정
+            const formattedContent = story.content.replace(/\n/g, '<br>');
+            document.getElementById('modalContent').innerHTML = formattedContent;
+
+            // 웹툰 메모 섹션 설정
+            const hasWebtoonNotes = story.thumbnail_idea || story.characters || story.scenes || story.webtoon_notes;
+            const webtoonSection = document.getElementById('webtoonSection');
+            
+            if (hasWebtoonNotes) {
+                const sections = [];
+                
+                if (story.thumbnail_idea) {
+                    sections.push(`
+                        <div>
+                            <h4 class="font-medium text-purple-700 mb-2">📎 썸네일 아이디어</h4>
+                            <p class="text-gray-700">${story.thumbnail_idea}</p>
+                        </div>
+                    `);
+                }
+
+                if (story.characters) {
+                    sections.push(`
+                        <div>
+                            <h4 class="font-medium text-purple-700 mb-2">👥 등장인물</h4>
+                            <div class="space-y-2">
+                                ${story.characters.split('\n').filter(Boolean).map(char => {
+                                    const [name, desc] = char.split(':');
+                                    return `<div class="bg-white p-2 rounded border">
+                                        <div class="font-medium text-purple-600 text-sm">${name.trim()}</div>
+                                        <div class="text-gray-700 text-xs">${desc ? desc.trim() : ''}</div>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `);
+                }
+
+                if (story.scenes) {
+                    sections.push(`
+                        <div>
+                            <h4 class="font-medium text-purple-700 mb-2">🎬 장면 구성</h4>
+                            <div class="space-y-2">
+                                ${story.scenes.split('\n').filter(Boolean).map(scene => {
+                                    const [cut, desc] = scene.split(':');
+                                    return `<div class="bg-white p-2 rounded border">
+                                        <div class="font-medium text-purple-600 text-sm">${cut.trim()}</div>
+                                        <div class="text-gray-700 text-xs">${desc ? desc.trim() : ''}</div>
+                                    </div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `);
+                }
+
+                if (story.webtoon_notes) {
+                    sections.push(`
+                        <div>
+                            <h4 class="font-medium text-purple-700 mb-2">📝 제작 메모</h4>
+                            <p class="text-gray-700">${story.webtoon_notes}</p>
+                        </div>
+                    `);
+                }
+
+                document.querySelector('#webtoonSection .grid').innerHTML = sections.join('');
+                webtoonSection.classList.remove('hidden');
+            } else {
+                webtoonSection.classList.add('hidden');
+            }
+
+            // 모달 표시
+            document.getElementById('storyModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('storyModal').classList.add('hidden');
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('storyModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            showHome();
+        });
+    </script>
+</body>
+</html>
