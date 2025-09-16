@@ -4,18 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>내 경험담 블로그 - 썰 모음집</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="과거 경험을 썰 형식으로 기록하고 웹툰으로 전환할 수 있는 블로그">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="썰 블로그">
+    <meta name="msapplication-TileColor" content="#2563eb">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiByeD0iMzAiIGZpbGw9IiMyNTYzZWIiLz4KPHN2ZyB4PSI0NSIgeT0iNDUiIHdpZHRoPSI5MCIgaGVpZ2h0PSI5MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KICA8cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnoiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHBhdGggZD0iTTggMTBoOCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik04IDEyaDYiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNOCAxNGg0IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPgo8L3N2Zz4K">
+    
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    
+    <!-- PWA Styles -->
+    <style>
+        /* PWA 전용 스타일 */
+        .pwa-mode {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* 설치 배너 애니메이션 */
+        #installBanner {
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* 오프라인 상태 표시 */
+        .offline-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+        
+        /* PWA 스플래시 화면 스타일 */
+        @media (display-mode: standalone) {
+            body {
+                user-select: none;
+                -webkit-user-select: none;
+            }
+        }
+        
+        /* 터치 피드백 개선 */
+        button, .cursor-pointer {
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
+        }
+    </style>
 </head>
 <body class="bg-gray-50 font-noto">
+    <!-- PWA Install Banner -->
+    <div id="installBanner" class="bg-blue-600 text-white p-3 text-center hidden">
+        <div class="flex items-center justify-center gap-4">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-mobile-alt"></i>
+                <span class="text-sm font-medium">앱으로 설치하여 더 편리하게 사용하세요!</span>
+            </div>
+            <div class="flex gap-2">
+                <button id="installBtn" class="px-4 py-1 bg-white text-blue-600 rounded text-sm font-medium hover:bg-gray-100 transition-colors">
+                    설치
+                </button>
+                <button id="dismissBtn" class="px-3 py-1 bg-blue-700 text-white rounded text-sm hover:bg-blue-800 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="bg-white shadow-sm border-b-2 border-blue-100">
         <div class="max-w-4xl mx-auto px-4 py-6">
             <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">📖 내 경험담 블로그</h1>
-                    <p class="text-gray-600 mt-1">과거의 경험들을 썰로 풀어내는 공간</p>
+                <div class="flex-1">
+                    <div class="flex items-center gap-3">
+                        <h1 class="text-2xl font-bold text-gray-900">📖 내 경험담 블로그</h1>
+                        <div id="connectionStatus" class="flex items-center">
+                            <i class="fas fa-spinner fa-spin text-gray-400 mr-1"></i>
+                            <span class="text-gray-400 text-xs">연결 중...</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mt-1">과거의 경험들을 썰로 풀어내는 공간 - 여러 사람이 함께 쓰는 공유 블로그</p>
+                </div>
+                <div id="headerUser" class="hidden md:block">
+                    <!-- 사용자 정보가 여기에 표시됩니다 -->
                 </div>
                 <nav class="flex gap-4">
                     <button onclick="showHome()" id="homeBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg">홈</button>
@@ -63,7 +162,12 @@
         <!-- Write Section -->
         <div id="writeSection" class="hidden">
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <h2 class="text-xl font-bold mb-6">✍️ 새 썰 쓰기</h2>
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold">✍️ 새 썰 쓰기</h2>
+                    <div id="writeAuthor" class="flex items-center gap-2 text-sm text-gray-600">
+                        <!-- 작성자 정보가 여기에 표시됩니다 -->
+                    </div>
+                </div>
                 
                 <form onsubmit="saveStory(event)" class="space-y-4">
                     <div>
@@ -306,6 +410,169 @@
     <script>
         let stories = [];
         let currentSection = 'home';
+        let db = null;
+        let isFirebaseEnabled = false;
+        
+        // 사용자 정보
+        let currentUser = null;
+
+        // Firebase 설정 (공개용 - 읽기/쓰기 제한 규칙으로 보호)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRk8KV5nF3AQlF7rGYwB2-Xc4P9mQ1aEE",
+            authDomain: "story-blog-f8c4a.firebaseapp.com",
+            projectId: "story-blog-f8c4a",
+            storageBucket: "story-blog-f8c4a.firebasestorage.app",
+            messagingSenderId: "486791234567",
+            appId: "1:486791234567:web:8a9b7c6d5e4f3g2h1i"
+        };
+
+        // Firebase 초기화
+        function initFirebase() {
+            try {
+                if (typeof firebase !== 'undefined') {
+                    firebase.initializeApp(firebaseConfig);
+                    db = firebase.firestore();
+                    isFirebaseEnabled = true;
+                    console.log('🔥 Firebase 연결 성공 - 공동 저장소 사용');
+                    
+                    // 연결 상태 UI 업데이트
+                    showConnectionStatus(true);
+                    
+                    // 실시간 업데이트 리스너 설정
+                    setupRealtimeListener();
+                } else {
+                    throw new Error('Firebase SDK 로드 실패');
+                }
+            } catch (error) {
+                console.warn('⚠️ Firebase 연결 실패 - localStorage 사용:', error);
+                isFirebaseEnabled = false;
+                showConnectionStatus(false);
+            }
+        }
+
+        // 연결 상태 표시
+        function showConnectionStatus(isOnline) {
+            const statusEl = document.getElementById('connectionStatus');
+            if (!statusEl) return;
+            
+            if (isOnline) {
+                statusEl.innerHTML = '<i class="fas fa-cloud text-green-500 mr-1"></i><span class="text-green-600 text-xs">공유 저장소</span>';
+                statusEl.className = 'flex items-center';
+            } else {
+                statusEl.innerHTML = '<i class="fas fa-hdd text-yellow-500 mr-1"></i><span class="text-yellow-600 text-xs">로컬 저장</span>';
+                statusEl.className = 'flex items-center';
+            }
+        }
+
+        // 사용자 관리 시스템
+        function initializeUser() {
+            // 기존 사용자 정보 확인
+            let userInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
+            
+            if (!userInfo) {
+                // 새 사용자 설정
+                const nickname = prompt('닉네임을 입력해주세요 (3-10자):', '익명' + Math.floor(Math.random() * 1000));
+                
+                if (!nickname || nickname.trim().length < 1) {
+                    alert('올바른 닉네임을 입력해주세요.');
+                    return initializeUser(); // 재귀 호출로 다시 입력받기
+                }
+                
+                // 고유 ID 생성 (6자리 랜덤)
+                const uniqueId = Math.random().toString(36).substr(2, 6).toUpperCase();
+                
+                // 사용자 컬러 생성 (시각적 구분용)
+                const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
+                const userColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                userInfo = {
+                    nickname: nickname.trim(),
+                    uniqueId: uniqueId,
+                    color: userColor,
+                    createdAt: new Date().toISOString()
+                };
+                
+                localStorage.setItem('userInfo', JSON.stringify(userInfo));
+            }
+            
+            currentUser = userInfo;
+            updateUserDisplay();
+            console.log('👤 사용자 정보 로드:', getDisplayName());
+        }
+
+        function getDisplayName() {
+            if (!currentUser) return '익명';
+            return `${currentUser.nickname} #${currentUser.uniqueId}`;
+        }
+
+        function getUserColor() {
+            return currentUser ? currentUser.color : '#6B7280';
+        }
+
+        function updateUserDisplay() {
+            if (!currentUser) return;
+            
+            // 헤더에 사용자 정보 표시
+            const headerUserEl = document.getElementById('headerUser');
+            if (headerUserEl) {
+                headerUserEl.innerHTML = `
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="showUserSettings()">
+                        <div class="w-3 h-3 rounded-full" style="background-color: ${currentUser.color}"></div>
+                        <span class="text-sm font-medium text-gray-700">${getDisplayName()}</span>
+                        <i class="fas fa-cog text-xs text-gray-400"></i>
+                    </div>
+                `;
+            }
+            
+            // 글쓰기 섹션에 작성자 정보 표시
+            const writeAuthorEl = document.getElementById('writeAuthor');
+            if (writeAuthorEl) {
+                writeAuthorEl.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-500">작성자:</span>
+                        <div class="w-3 h-3 rounded-full" style="background-color: ${currentUser.color}"></div>
+                        <span class="font-medium" style="color: ${currentUser.color}">${getDisplayName()}</span>
+                    </div>
+                `;
+            }
+        }
+
+        function showUserSettings() {
+            const newNickname = prompt('새 닉네임을 입력해주세요:', currentUser.nickname);
+            
+            if (newNickname && newNickname.trim() && newNickname.trim() !== currentUser.nickname) {
+                currentUser.nickname = newNickname.trim();
+                localStorage.setItem('userInfo', JSON.stringify(currentUser));
+                updateUserDisplay();
+                alert('닉네임이 변경되었습니다!');
+            }
+        }
+
+        // 실시간 데이터 업데이트 리스너
+        function setupRealtimeListener() {
+            if (!db) return;
+            
+            db.collection('stories')
+                .orderBy('created_at', 'desc')
+                .onSnapshot((snapshot) => {
+                    const newStories = [];
+                    snapshot.forEach((doc) => {
+                        newStories.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    
+                    stories = newStories;
+                    if (currentSection === 'home') {
+                        updateStats();
+                        renderStories();
+                    }
+                    console.log('📡 실시간 데이터 업데이트:', stories.length, '개 썰');
+                }, (error) => {
+                    console.warn('실시간 업데이트 실패:', error);
+                });
+        }
 
         // 네비게이션 함수들
         function showHome() {
@@ -346,20 +613,26 @@
             });
         }
 
-        // 데이터 로딩 (API가 안 되면 localStorage 사용)
+        // 데이터 로딩 (Firebase 우선, localStorage 백업)
         async function loadData() {
             try {
-                // API 시도
-                const response = await fetch('tables/stories');
-                if (response.ok) {
-                    const data = await response.json();
-                    stories = data.data || [];
+                if (isFirebaseEnabled && db) {
+                    // Firebase Firestore 사용
+                    const snapshot = await db.collection('stories').orderBy('created_at', 'desc').get();
+                    stories = [];
+                    snapshot.forEach((doc) => {
+                        stories.push({
+                            id: doc.id,
+                            ...doc.data()
+                        });
+                    });
+                    console.log('🔥 Firebase에서 데이터 로드:', stories.length, '개 썰');
                 } else {
-                    throw new Error('API 실패');
+                    throw new Error('Firebase 사용 불가');
                 }
             } catch (error) {
                 // localStorage 백업 사용
-                console.warn('API를 사용할 수 없어 localStorage를 사용합니다:', error);
+                console.warn('⚠️ Firebase 로드 실패, localStorage 사용:', error);
                 stories = JSON.parse(localStorage.getItem('stories') || '[]');
             }
             
@@ -408,8 +681,13 @@
                 const previewContent = (story.content || '').substring(0, 150) + '...';
                 const createdAt = story.created_at ? new Date(story.created_at).toLocaleDateString('ko-KR') : '방금 전';
 
+                // 작성자 정보 처리
+                const authorDisplay = story.author_display || '익명';
+                const authorColor = story.author_color || '#6B7280';
+                const isMyStory = currentUser && story.author_id === currentUser.uniqueId;
+
                 return `
-                    <article class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                    <article class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow ${isMyStory ? 'ring-2 ring-blue-100' : ''}">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex-1">
                                 <div class="flex items-center gap-2 mb-2">
@@ -417,6 +695,11 @@
                                     <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">${story.status || '초안'}</span>
                                     ${(story.characters || story.scenes || story.thumbnail_idea || story.webtoon_notes) ? 
                                         '<span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-700" title="웹툰 메모 있음"><i class="fas fa-palette mr-1"></i>웹툰</span>' : ''}
+                                    ${isMyStory ? '<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700"><i class="fas fa-user mr-1"></i>내 글</span>' : ''}
+                                </div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-3 h-3 rounded-full" style="background-color: ${authorColor}"></div>
+                                    <span class="text-sm font-medium" style="color: ${authorColor}">${authorDisplay}</span>
                                 </div>
                                 <h2 class="text-xl font-semibold text-gray-900 mb-2 cursor-pointer hover:text-blue-600 transition-colors" onclick="viewStoryDetail('${story.id}')">
                                     ${emoji} ${story.title}
@@ -428,9 +711,12 @@
                         <div class="flex items-center justify-between text-sm text-gray-500 border-t pt-4">
                             <span><i class="far fa-clock mr-1"></i>${createdAt}</span>
                             <div class="flex gap-2">
-                                <button onclick="deleteStory('${story.id}')" class="text-red-600 hover:text-red-700 px-2 py-1 rounded">
-                                    <i class="fas fa-trash mr-1"></i>삭제
-                                </button>
+                                ${isMyStory ? 
+                                    `<button onclick="deleteStory('${story.id}')" class="text-red-600 hover:text-red-700 px-2 py-1 rounded">
+                                        <i class="fas fa-trash mr-1"></i>삭제
+                                    </button>` : 
+                                    `<span class="text-xs text-gray-400 px-2 py-1">다른 사용자의 글</span>`
+                                }
                             </div>
                         </div>
                     </article>
@@ -494,28 +780,28 @@
                 characters,
                 scenes,
                 thumbnail_idea: thumbnailIdea,
-                webtoon_notes: webtoonNotes
+                webtoon_notes: webtoonNotes,
+                // 작성자 정보 추가
+                author_display: getDisplayName(),
+                author_id: currentUser ? currentUser.uniqueId : null,
+                author_color: getUserColor(),
+                author_nickname: currentUser ? currentUser.nickname : '익명'
             };
 
             try {
-                // API 시도
-                const response = await fetch('tables/stories', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(story)
-                });
-
-                if (response.ok) {
-                    console.log('API를 통해 저장되었습니다.');
+                if (isFirebaseEnabled && db) {
+                    // Firebase Firestore에 저장
+                    const docRef = await db.collection('stories').add(story);
+                    console.log('🔥 Firebase에 저장됨 ID:', docRef.id);
                 } else {
-                    throw new Error('API 저장 실패');
+                    throw new Error('Firebase 사용 불가');
                 }
             } catch (error) {
                 // localStorage 백업
-                console.warn('API 저장 실패, localStorage 사용:', error);
-                const stories = JSON.parse(localStorage.getItem('stories') || '[]');
-                stories.unshift(story);
-                localStorage.setItem('stories', JSON.stringify(stories));
+                console.warn('⚠️ Firebase 저장 실패, localStorage 사용:', error);
+                const localStories = JSON.parse(localStorage.getItem('stories') || '[]');
+                localStories.unshift(story);
+                localStorage.setItem('stories', JSON.stringify(localStories));
             }
 
             alert(`${status === '발행' ? '발행' : '저장'}되었습니다!`);
@@ -610,16 +896,17 @@
             if (!confirm('정말로 이 썰을 삭제하시겠습니까?')) return;
             
             try {
-                const response = await fetch(`tables/stories/${id}`, { method: 'DELETE' });
-                if (response.ok) {
-                    console.log('API를 통해 삭제되었습니다.');
+                if (isFirebaseEnabled && db) {
+                    // Firebase에서 삭제
+                    await db.collection('stories').doc(id).delete();
+                    console.log('🔥 Firebase에서 삭제됨 ID:', id);
                 } else {
-                    throw new Error('API 삭제 실패');
+                    throw new Error('Firebase 사용 불가');
                 }
             } catch (error) {
-                console.warn('API 삭제 실패, localStorage 사용:', error);
-                const stories = JSON.parse(localStorage.getItem('stories') || '[]');
-                const filteredStories = stories.filter(story => story.id !== id);
+                console.warn('⚠️ Firebase 삭제 실패, localStorage 사용:', error);
+                const localStories = JSON.parse(localStorage.getItem('stories') || '[]');
+                const filteredStories = localStories.filter(story => story.id !== id);
                 localStorage.setItem('stories', JSON.stringify(filteredStories));
             }
             
@@ -796,10 +1083,20 @@
             const status = statusConfig[story.status] || statusConfig['초안'];
             const createdAt = story.created_at ? new Date(story.created_at).toLocaleDateString('ko-KR') : '방금 전';
             
+            // 작성자 정보 처리
+            const authorDisplay = story.author_display || '익명';
+            const authorColor = story.author_color || '#6B7280';
+            const isMyStory = currentUser && story.author_id === currentUser.uniqueId;
+
             const metaHtml = [
                 story.series ? `<span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">${story.series}</span>` : '',
                 `<span class="px-2 py-1 text-xs font-medium rounded-full ${status.class}">${status.text}</span>`,
-                `<span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i>${createdAt}</span>`
+                `<span class="text-sm text-gray-500"><i class="far fa-clock mr-1"></i>${createdAt}</span>`,
+                `<span class="flex items-center gap-1 text-sm">
+                    <div class="w-3 h-3 rounded-full" style="background-color: ${authorColor}"></div>
+                    <span style="color: ${authorColor}">${authorDisplay}</span>
+                    ${isMyStory ? '<i class="fas fa-user text-blue-500 ml-1" title="내가 작성한 글"></i>' : ''}
+                </span>`
             ].filter(Boolean);
             
             document.getElementById('modalMeta').innerHTML = metaHtml.join('');
@@ -896,9 +1193,148 @@
             }
         });
 
+        // PWA 관련 함수들
+        let deferredPrompt;
+
+        // PWA 설치 가능 이벤트
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('PWA 설치 프롬프트 준비됨');
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallBanner();
+        });
+
+        function showInstallBanner() {
+            const banner = document.getElementById('installBanner');
+            const dismissedTime = localStorage.getItem('pwa-banner-dismissed');
+            
+            // 24시간 내에 dismissed된 경우 표시하지 않음
+            if (dismissedTime && Date.now() - parseInt(dismissedTime) < 24 * 60 * 60 * 1000) {
+                return;
+            }
+            
+            banner.classList.remove('hidden');
+        }
+
+        // 설치 버튼 클릭
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`PWA 설치 결과: ${outcome}`);
+                
+                if (outcome === 'accepted') {
+                    console.log('사용자가 PWA 설치를 승인했습니다');
+                } else {
+                    console.log('사용자가 PWA 설치를 거부했습니다');
+                }
+                
+                deferredPrompt = null;
+                hideInstallBanner();
+            }
+        });
+
+        // 배너 닫기
+        document.getElementById('dismissBtn').addEventListener('click', () => {
+            hideInstallBanner();
+            localStorage.setItem('pwa-banner-dismissed', Date.now().toString());
+        });
+
+        function hideInstallBanner() {
+            document.getElementById('installBanner').classList.add('hidden');
+        }
+
+        // PWA 설치 완료 후
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('PWA가 성공적으로 설치되었습니다');
+            hideInstallBanner();
+            
+            // 설치 감사 메시지
+            setTimeout(() => {
+                alert('📱 앱 설치가 완료되었습니다! 이제 홈 화면에서 바로 접속할 수 있어요.');
+            }, 1000);
+        });
+
+        // Service Worker 등록
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker 등록 성공:', registration.scope);
+                        
+                        // 업데이트 확인
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // 새 버전 알림
+                                    if (confirm('새로운 버전이 available합니다. 지금 업데이트하시겠습니까?')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker 등록 실패:', error);
+                    });
+                
+                // Service Worker 메시지 수신
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                    if (event.data && event.data.type === 'SW_UPDATED') {
+                        window.location.reload();
+                    }
+                });
+            });
+        }
+
+        // 온라인/오프라인 상태 감지
+        window.addEventListener('online', () => {
+            console.log('온라인 상태입니다');
+            document.body.style.filter = 'none';
+            
+            // 온라인 상태 알림
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded z-50';
+            notification.innerHTML = '<i class="fas fa-wifi mr-2"></i>온라인 상태입니다';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('오프라인 상태입니다');
+            document.body.style.filter = 'grayscale(0.5)';
+            
+            // 오프라인 상태 알림
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-2 rounded z-50';
+            notification.innerHTML = '<i class="fas fa-wifi-slash mr-2"></i>오프라인 모드 (저장된 데이터 사용)';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        });
+
         // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', () => {
+            // 사용자 시스템 초기화
+            initializeUser();
+            
+            // Firebase 초기화
+            initFirebase();
+            
             showHome();
+            
+            // PWA 디스플레이 모드 확인
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('PWA 앱 모드로 실행 중입니다');
+                document.body.classList.add('pwa-mode');
+            }
         });
     </script>
 </body>
